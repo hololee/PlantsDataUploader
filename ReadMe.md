@@ -5,7 +5,7 @@
 사용 방법은 아래를 참고하세요.
 
 
-####- Instruction  
+#### - Instruction  
 ~~~
 "setup.bin" 파일을 텍스트 에디터로 열어서 알맞게 수정해주세요.
 
@@ -20,6 +20,6 @@ Please open the setup.bin file as a text editor and modify it accordingly.
 3. Select the plant type and angle at the bottom and press upload.
 ~~~  
 
-####- Screenshot  
+#### - Screenshot  
 ![Screenshot](https://github.com/hololee/plants_data_uploader/blob/master/screen1.PNG?raw=true)
  
