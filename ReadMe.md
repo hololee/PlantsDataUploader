@@ -21,5 +21,5 @@ Please open the setup.bin file as a text editor and modify it accordingly.
 ~~~  
 
 ####- Screenshot  
-![Screenshot]('https://github.com/hololee/plants_data_uploader/raw/master/screen1.PNG?raw=true')
+![Screenshot]('https://github.com/hololee/plants_data_uploader/blob/master/screen1.PNG?raw=true')
  
