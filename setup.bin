@@ -1,0 +1,9 @@
+//This Script is setting initializer.
+//Do not change ip info.
+ip=***.***.***.***
+target_path=/path/
+
+//Change this part.
+user=admin
+pass=admin
+name=jonghyeok
