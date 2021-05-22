@@ -1,8 +1,10 @@
+# pyinstaller --icon=icon.ico --onefile --noconsole main.py
 from PIL import Image
 import os, sys
 from PyQt5.QtWidgets import QApplication, QAction, QFileDialog, QLabel, QPushButton, QMainWindow, QMessageBox, QComboBox, QProgressBar
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
+from PyQt5 import QtWidgets
 from ftplib import FTP
 from datetime import datetime
 
@@ -26,20 +28,27 @@ class MainWindow(QMainWindow):
 
         self.initUI()
 
-        self.f = open(f"./log/log_{str(int(datetime.now().timestamp()*1000))}.txt", 'w')
+        self.f = open(f"./log/log_{str(int(datetime.now().timestamp() * 1000))}.txt", 'w')
 
     def initUI(self):
         self.setWindowTitle('Plants Image Uploader')
-        self.setWindowIcon(QIcon('leaf.png'))
+        self.setWindowIcon(QIcon('res/leaf.png'))
 
-        openFile = QAction(QIcon('folder.png'), 'select folder', self)
+        openFile = QAction(QIcon('res/folder.png'), 'select folder', self)
         # openFile.setShortcut('Ctrl+O')
-        openFile.triggered.connect(self.showDialog)
+        openFile.triggered.connect(self.show_dialog)
+
+        openInfo = QAction(QIcon('res/info.png'), 'Info', self)
+        openInfo.triggered.connect(self.show_info)
 
         menubar = self.menuBar()
+        menubar.setStyleSheet("background-color: rgb(230,230,230)")
         menubar.setNativeMenuBar(False)
         filemenu = menubar.addMenu('&File')
         filemenu.addAction(openFile)
+
+        infomenu = menubar.addMenu('&Info')
+        infomenu.addAction(openInfo)
 
         self.label1 = QLabel('Selected path :', self)
         self.label1.move(10, 50)
@@ -90,6 +99,11 @@ class MainWindow(QMainWindow):
             self.resize(600, 134)
             self.setFixedSize(600, 134)
             self.show()
+
+            mes = '[IMPORTANT]\n"setup.bin" 파일을 텍스트 에디터로 열어서 알맞게 수정해주세요.\n\n1. 특정 각도, 한 종류의 식물 사진을 특정 디렉터리로 옮깁니다.\n2. "File - select folder"를 클릭해서 사진이 있는 디렉터리를 선택합니다.\n3. 하단의 식물 종류와 각도를 선택하고 upload를 누릅니다.'
+            mes_en = '[IMPORTANT]\nPlease open the "setup.bin" file as a text editor and modify it accordingly.\n\n1. Move a picture of a particular angle, one type of plant, to a particular directory.\n2. Click "File - select folder" to select the directory where the pictures are located.\n3. Select the plant type and angle at the bottom and press upload.'
+            self.show_message('Instruction', mes + '\n\n' + mes_en, False)
+
         else:
             self.show_message('Warning', 'There is a problem with the setup.bin file.\nCheck this file and run again.', True)
 
@@ -138,7 +152,14 @@ class MainWindow(QMainWindow):
         else:
             self.show_message('Path Alert', 'Please select the folder first.', False)
 
-    def showDialog(self):
+    def show_info(self):
+        msgbox = QMessageBox()
+        msgbox.setWindowIcon(QIcon('res/info.png'))
+        msgbox.setText('Plants data uploader (1.0.0)\n\nIf it\'s useful, put a tip on Jong Hyeok\'s desk... \n(I just love doing lots of homework on Saturdays~****)')
+        msgbox.show()
+        msgbox.exec_()
+
+    def show_dialog(self):
         get_path = QFileDialog.getExistingDirectory(self, 'select target folder', './')
         if get_path:
             self.image_path = get_path
@@ -154,7 +175,7 @@ class MainWindow(QMainWindow):
                 return filtered
             else:
                 # miss match extension recognized.
-                self.show_message('Message', 'This program only support (*png, *jpg) extensions.', False)
+                self.show_message('Message', 'This program only support (*png, *jpg) extensions.\nImage file not found.', False)
 
         elif len(item_list) == 0:
             # no file.
@@ -165,7 +186,7 @@ class MainWindow(QMainWindow):
     def show_message(self, title, text, exit_sys):
         msg_box = QMessageBox()
         msg_box.setWindowTitle(title)
-        msg_box.setWindowIcon(QIcon('leaf.png'))
+        msg_box.setWindowIcon(QIcon('res/info.png'))
         msg_box.setText(text)
         msg_box.show()
         msg_box.exec_()
@@ -195,7 +216,7 @@ class MainWindow(QMainWindow):
                 meta_date = img._getexif()[36867].split()[0].replace(':', '-')
             except:
                 meta_date = '0000-00-00'
-            time_mark = str(int(datetime.now().timestamp()*1000))
+            time_mark = str(int(datetime.now().timestamp() * 1000))
 
             final_file_name = meta_date + '_' + \
                               self.settings['name'] + '_' + \
