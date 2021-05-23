@@ -9,7 +9,8 @@
 사용 방법은 아래를 참고하세요.
 
 
-#### - Instruction  
+#### - Instruction 
+![type](https://github.com/hololee/plants_data_uploader/blob/master/type.PNG?raw=true)
 ~~~
 "setup.bin" 파일을 텍스트 에디터로 열어서 알맞게 수정해주세요.
 
