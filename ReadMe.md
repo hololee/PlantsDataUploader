@@ -10,7 +10,7 @@
 
 
 #### - Instruction 
-![type](https://github.com/hololee/plants_data_uploader/blob/master/type.PNG?raw=true)
+![type](https://github.com/hololee/plants_data_uploader/blob/master/type.png?raw=true)
 ~~~
 "setup.bin" 파일을 텍스트 에디터로 열어서 알맞게 수정해주세요.
 
