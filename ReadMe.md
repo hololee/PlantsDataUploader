@@ -1,4 +1,8 @@
 ## Plants data uploader  
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
+[![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/Naereen/StrapDown.js/blob/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/v/release/hololee/PlantsDataUploader.svg)](https://github.com/hololee/PlantsDataUploader/releases)
+
 ### Data collect application for field plants.  
 
 밭에서 재배 하는 작물을 0, 45, 90도의 위치에서 촬영한 이미지를 분류하기 위한 툴입니다.    
