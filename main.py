@@ -154,7 +154,7 @@ class MainWindow(QMainWindow):
     def show_info(self):
         msgbox = QMessageBox()
         msgbox.setWindowIcon(QIcon('res/info.png'))
-        msgbox.setText('Plants data uploader (1.0.0)\n\nIf it\'s useful, put a tip on Jong Hyeok\'s desk... \n(I just love doing lots of homework on Saturdays~****)')
+        msgbox.setText('Plants data uploader (1.0.1)\n\nIf it\'s useful, put a tip on Jong Hyeok\'s desk... \n(I just love doing lots of homework on Saturdays~****)')
         msgbox.show()
         msgbox.exec_()
 
