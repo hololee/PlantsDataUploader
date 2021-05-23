@@ -28,7 +28,6 @@ class MainWindow(QMainWindow):
 
         self.initUI()
 
-        self.f = open(f"./log/log_{str(int(datetime.now().timestamp() * 1000))}.txt", 'w')
 
     def initUI(self):
         self.setWindowTitle('Plants Image Uploader')
@@ -194,12 +193,13 @@ class MainWindow(QMainWindow):
             sys.exit()
 
     def upload_images(self, filtered_list):
+        self.f = open(f"./log/log_{str(int(datetime.now().timestamp() * 1000))}.txt", 'w')
         try:
             # set ftp.
             ftp = FTP()
             ftp.connect(self.settings['ip'], 21)
             ftp.login(self.settings['user'], self.settings['pass'])
-            ftp.encoding = 'utf-8'
+            ftp.encoding = 'cp949'
             ftp.cwd(self.settings['target_path'] + self.selected_species + '/images')
         except Exception as e:
             self.statusBar().showMessage('Upload Error : Connection Failed', 5000)
