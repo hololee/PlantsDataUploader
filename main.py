@@ -1,15 +1,90 @@
 # pyinstaller --icon=icon.ico --onefile --noconsole main.py
 from PIL import Image
 import os, sys
-from PyQt5.QtWidgets import QApplication, QAction, QFileDialog, QLabel, QPushButton, QMainWindow, QMessageBox, QComboBox, QProgressBar
+from PyQt5.QtWidgets import QApplication, QAction, QFileDialog, QLabel, QPushButton, QMainWindow, QMessageBox, QComboBox, QProgressBar, QVBoxLayout, QPlainTextEdit
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
-from PyQt5 import QtWidgets
+from PyQt5.QtCore import QThread
+from PyQt5 import QtWidgets, QtGui
 from ftplib import FTP
 from datetime import datetime
+from collections import Counter
 
 if not os.path.exists('./log'):
     os.mkdir('./log/')
+
+
+class WorkerThread(QThread):
+
+    def __init__(self, settings, species_list):
+        super().__init__()
+        self.settings = settings
+        self.species_list = species_list
+
+    def run(self):
+        # find status.
+        self.user_species_counter = Counter()
+
+        try:
+            # set ftp.
+            ftp = FTP()
+            ftp.connect(self.settings['ip'], 21)
+            ftp.login(self.settings['user'], self.settings['pass'])
+            ftp.encoding = 'cp949'
+
+            # search file names.
+            for sp in self.species_list:
+                ftp.cwd(self.settings['target_path'] + sp + '/images')
+                try:
+                    files = ftp.nlst()
+                    for f in files:
+                        if self.settings['name'] in f:
+                            target_degree = f.split('_')[3]
+                            self.user_species_counter[f'{sp} - {target_degree}'] += 1
+                except:
+                    print('no file found.')
+
+        except Exception as e:
+            print(e)
+            return
+
+        if ftp:
+            ftp.close()
+
+        self.quit()
+
+
+class SearchingStatusDialog(QtWidgets.QDialog):
+
+    def __init__(self, settings, species_list):
+        super().__init__()
+        self.settings = settings
+        self.setWindowTitle('Your status.')
+        self.setWindowIcon(QIcon('res/info.png'))
+        self.resize(300, 50)
+
+        self.layout = QVBoxLayout()
+        self.message = QPlainTextEdit("Wait a moment...")
+
+        self.layout.addWidget(self.message)
+        self.setLayout(self.layout)
+
+        self.thread = WorkerThread(self.settings, species_list)
+        self.thread.finished.connect(self.show_status)
+        self.thread.start()
+
+    def show_status(self):
+        print('finish')
+        message_temp = f'{self.settings["name"].upper()} current status.\n\n'
+        total_val = 0
+        for key, value in sorted(self.thread.user_species_counter.items(), reverse=False):
+            message_temp += f"{key} : {value} shots\n"
+            total_val += value
+
+        message_temp += f'\nTOTAL : {total_val} shots'
+        self.message.setPlainText(message_temp)
+        self.resize(300, 500)
+        self.update()
 
 
 class MainWindow(QMainWindow):
@@ -28,7 +103,6 @@ class MainWindow(QMainWindow):
 
         self.initUI()
 
-
     def initUI(self):
         self.setWindowTitle('Plants Image Uploader')
         self.setWindowIcon(QIcon('res/leaf.png'))
@@ -40,6 +114,9 @@ class MainWindow(QMainWindow):
         openInfo = QAction(QIcon('res/info.png'), 'Info', self)
         openInfo.triggered.connect(self.show_info)
 
+        openStatus = QAction(QIcon('res/info.png'), 'Status', self)
+        openStatus.triggered.connect(self.show_status)
+
         menubar = self.menuBar()
         menubar.setStyleSheet("background-color: rgb(230,230,230)")
         menubar.setNativeMenuBar(False)
@@ -48,6 +125,7 @@ class MainWindow(QMainWindow):
 
         infomenu = menubar.addMenu('&Info')
         infomenu.addAction(openInfo)
+        infomenu.addAction(openStatus)
 
         self.label1 = QLabel('Selected path :', self)
         self.label1.move(10, 50)
@@ -150,6 +228,11 @@ class MainWindow(QMainWindow):
                     print('canceled.')
         else:
             self.show_message('Path Alert', 'Please select the folder first.', False)
+
+    def show_status(self):
+        msg = SearchingStatusDialog(self.settings, self.species_list)
+        msg.show()
+        msg.exec_()
 
     def show_info(self):
         msgbox = QMessageBox()

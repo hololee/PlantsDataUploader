@@ -3,6 +3,13 @@
 [![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/Naereen/StrapDown.js/blob/master/LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/hololee/PlantsDataUploader.svg)](https://github.com/hololee/PlantsDataUploader/releases)
 
+###### [Ver 1.0.2]  
+사용자별 현재 업로드 현황 조회 기능 추가.
+  
+
+
+
+
 ### Data collect application for field plants.  
 
 밭에서 재배 하는 작물을 0, 45, 90도의 위치에서 촬영한 이미지를 분류하기 위한 툴입니다.    
@@ -29,4 +36,5 @@ Please open the setup.bin file as a text editor and modify it accordingly.
 - ### Screenshot  
 ![Screenshot](https://github.com/hololee/plants_data_uploader/blob/master/screen1.PNG?raw=true)
 ![Screenshot](https://github.com/hololee/plants_data_uploader/blob/master/screen2.PNG?raw=true)
+![Screenshot](https://github.com/hololee/plants_data_uploader/blob/master/screen3.PNG?raw=true)
  
