@@ -3,8 +3,10 @@
 [![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/Naereen/StrapDown.js/blob/master/LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/hololee/PlantsDataUploader.svg)](https://github.com/hololee/PlantsDataUploader/releases)
 
-###### [Ver 1.0.2]  
-사용자별 현재 업로드 현황 조회 기능 추가.
+###### [Ver 1.0.3]  
+- 마지막 찍힌 일자 확인 기능 추가.
+- Added date confirmation function last taken.
+
   
 
 
