@@ -307,6 +307,7 @@ class MainWindow(QMainWindow):
                 self.f.write('Server Connection Failed\n')
                 self.f.write(str(e))
                 self.f.close()
+
                 return
 
             for idx, i_name in enumerate(filtered_list):
@@ -337,13 +338,14 @@ class MainWindow(QMainWindow):
                     self.statusBar().showMessage('Upload Error : target_name')
                     self.f.write(f'[Fail] {m_path},{final_file_name}\n')
                 # upload end.
+
+            if ftp:
+                ftp.close()
+
         except Exception as eall:
             self.f.write('[Upload Failed]\n')
             self.f.write(str(eall))
             self.f.close()
-
-        if ftp:
-            ftp.close()
 
         self.f.close()
         self.statusBar().showMessage('Finish', 5000)
