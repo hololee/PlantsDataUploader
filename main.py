@@ -294,48 +294,53 @@ class MainWindow(QMainWindow):
     def upload_images(self, filtered_list):
         self.f = open(f"./log/log_{str(int(datetime.now().timestamp() * 1000))}.txt", 'w')
         try:
-            # set ftp.
-            ftp = FTP()
-            ftp.connect(self.settings['ip'], 21)
-            ftp.login(self.settings['user'], self.settings['pass'])
-            ftp.encoding = 'cp949'
-            ftp.cwd(self.settings['target_path'] + self.selected_species + '/images')
-        except Exception as e:
-            self.statusBar().showMessage('Upload Error : Connection Failed', 5000)
-            self.show_message('Warning', 'Server Connection Failed', False)
-            self.f.write('Server Connection Failed\n')
-            self.f.write(str(e))
+            try:
+                # set ftp.
+                ftp = FTP()
+                ftp.connect(self.settings['ip'], 21)
+                ftp.login(self.settings['user'], self.settings['pass'])
+                ftp.encoding = 'cp949'
+                ftp.cwd(self.settings['target_path'] + self.selected_species + '/images')
+            except Exception as e:
+                self.statusBar().showMessage('Upload Error : Connection Failed', 5000)
+                self.show_message('Warning', 'Server Connection Failed', False)
+                self.f.write('Server Connection Failed\n')
+                self.f.write(str(e))
+                self.f.close()
+                return
+
+            for idx, i_name in enumerate(filtered_list):
+                m_path = self.image_path + '/' + i_name
+                img = Image.open(m_path)
+                try:
+                    meta_date = img._getexif()[36867].split()[0].replace(':', '-')
+                except:
+                    meta_date = '0000-00-00'
+                time_mark = str(int(datetime.now().timestamp() * 1000))
+
+                final_file_name = meta_date + '_' + \
+                                  self.settings['name'] + '_' + \
+                                  self.selected_species + '_' + \
+                                  self.selected_degree + '_' + time_mark + '.' + i_name.split('.')[1]
+
+                self.statusBar().showMessage(f'Uploading: {i_name}')
+                self.progressbar.setValue(idx * 100 // (len(filtered_list) - 1))
+                print(final_file_name)
+
+                # upload images.
+
+                try:
+                    m_image = open(m_path, 'rb')
+                    ftp.storbinary('STOR ' + final_file_name, m_image)
+                    self.f.write(f'[Success] {m_path},{final_file_name}\n')
+                except:
+                    self.statusBar().showMessage('Upload Error : target_name')
+                    self.f.write(f'[Fail] {m_path},{final_file_name}\n')
+                # upload end.
+        except Exception as eall:
+            self.f.write('[Upload Failed]\n')
+            self.f.write(str(eall))
             self.f.close()
-            return
-
-        for idx, i_name in enumerate(filtered_list):
-            m_path = self.image_path + '/' + i_name
-            img = Image.open(m_path)
-            try:
-                meta_date = img._getexif()[36867].split()[0].replace(':', '-')
-            except:
-                meta_date = '0000-00-00'
-            time_mark = str(int(datetime.now().timestamp() * 1000))
-
-            final_file_name = meta_date + '_' + \
-                              self.settings['name'] + '_' + \
-                              self.selected_species + '_' + \
-                              self.selected_degree + '_' + time_mark + '.' + i_name.split('.')[1]
-
-            self.statusBar().showMessage(f'Uploading: {i_name}')
-            self.progressbar.setValue(idx * 100 // (len(filtered_list) - 1))
-            print(final_file_name)
-
-            # upload images.
-
-            try:
-                m_image = open(m_path, 'rb')
-                ftp.storbinary('STOR ' + final_file_name, m_image)
-                self.f.write(f'[Success] {m_path},{final_file_name}\n')
-            except:
-                self.statusBar().showMessage('Upload Error : target_name')
-                self.f.write(f'[Fail] {m_path},{final_file_name}\n')
-            # upload end.
 
         if ftp:
             ftp.close()
