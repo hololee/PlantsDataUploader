@@ -14,7 +14,7 @@ if not os.path.exists('./log'):
     os.mkdir('./log/')
 
 
-class WorkerThread(QThread):
+class FileSearchThread(QThread):
 
     def __init__(self, settings, species_list):
         super().__init__()
@@ -24,6 +24,9 @@ class WorkerThread(QThread):
     def run(self):
         # find status.
         self.user_species_counter = Counter()
+
+        # last date.
+        self.last_date = '0000-00-00'
 
         try:
             # set ftp.
@@ -39,7 +42,13 @@ class WorkerThread(QThread):
                     files = ftp.nlst()
                     for f in files:
                         if self.settings['name'] in f:
+
+                            taken_date = f.split('_')[0]
+                            if taken_date > self.last_date:
+                                self.last_date = taken_date
+
                             target_degree = f.split('_')[3]
+
                             self.user_species_counter[f'{sp} - {target_degree}'] += 1
                 except:
                     print('no file found.')
@@ -69,21 +78,28 @@ class SearchingStatusDialog(QtWidgets.QDialog):
         self.layout.addWidget(self.message)
         self.setLayout(self.layout)
 
-        self.thread = WorkerThread(self.settings, species_list)
+        self.thread = FileSearchThread(self.settings, species_list)
         self.thread.finished.connect(self.show_status)
         self.thread.start()
 
     def show_status(self):
         print('finish')
-        message_temp = f'{self.settings["name"].upper()} current status.\n\n'
+        message_temp = '=' * 44 + '\n'
+        message_temp += f'{self.settings["name"].upper()} current status.\n'
+        message_temp += '=' * 44 + '\n'
+        message_temp += f'Last uploaded image taken date : {self.thread.last_date}\n'
+        message_temp += '-' * 44 + '\n'
+
         total_val = 0
         for key, value in sorted(self.thread.user_species_counter.items(), reverse=False):
             message_temp += f"{key} : {value} shots\n"
             total_val += value
 
-        message_temp += f'\nTOTAL : {total_val} shots'
+        message_temp += '-' * 44 + '\n'
+        message_temp += f'Total : {total_val} shots\n'
+        message_temp += '=' * 44
         self.message.setPlainText(message_temp)
-        self.resize(300, 500)
+        self.resize(350, 600)
         self.update()
 
 
@@ -237,7 +253,7 @@ class MainWindow(QMainWindow):
     def show_info(self):
         msgbox = QMessageBox()
         msgbox.setWindowIcon(QIcon('res/info.png'))
-        msgbox.setText('Plants data uploader (1.0.2)\n\nIf it\'s useful, put a tip on Jong Hyeok\'s desk... \n(I just love doing lots of homework on Saturdays~****)')
+        msgbox.setText('Plants data uploader (1.0.3)\n\nIf it\'s useful, put a tip on Jong Hyeok\'s desk... \n(I just love doing lots of homework on Saturdays~****)')
         msgbox.show()
         msgbox.exec_()
 
