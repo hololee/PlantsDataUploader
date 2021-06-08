@@ -9,6 +9,17 @@ from PyQt5 import QtWidgets, QtGui
 from ftplib import FTP
 from datetime import datetime
 from collections import Counter
+from tabulate import tabulate
+import numpy as np
+header = ["Korean", "English"]
+
+k_name = ['기장', '녹두', '들깨', '땅콩', '수수', '옥수수', '조', '참깨', '콩', '팥']
+e_name = ['proso_millet', 'green_gram', 'perilla', 'peanut', 'great_millet', 'corn', 'foxtail_millet', 'sesame', 'bean', 'red_bean']
+
+result = np.concatenate((np.asarray(k_name).reshape(-1,1), np.asarray(e_name).reshape(-1,1)), 1)
+
+
+
 
 if not os.path.exists('./log'):
     os.mkdir('./log/')
@@ -109,7 +120,8 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.image_extension = ['png', 'jpg']
-        self.species_list = ['기장', '녹두', '들깨', '땅콩', '수수', '옥수수', '조', '참깨', '콩', '팥']
+        self.species_list = ['proso_millet', 'green_gram', 'perilla', 'peanut',
+                             'great_millet', 'corn', 'foxtail_millet', 'sesame', 'bean', 'red_bean']
         self.degree_list = ['0', '45', '90']
         self.setting_options = ['ip', 'user', 'path', 'name']
         self.selected_species = self.species_list[0]
@@ -129,6 +141,9 @@ class MainWindow(QMainWindow):
 
         openInfo = QAction(QIcon('res/info.png'), 'Info', self)
         openInfo.triggered.connect(self.show_info)
+        
+        openclassdetail = QAction(QIcon('res/info.png'), 'classes_detail', self)
+        openclassdetail.triggered.connect(self.show_class_detail)
 
         openStatus = QAction(QIcon('res/info.png'), 'Status', self)
         openStatus.triggered.connect(self.show_status)
@@ -142,6 +157,7 @@ class MainWindow(QMainWindow):
         infomenu = menubar.addMenu('&Info')
         infomenu.addAction(openInfo)
         infomenu.addAction(openStatus)
+        infomenu.addAction(openclassdetail)
 
         self.label1 = QLabel('Selected path :', self)
         self.label1.move(10, 50)
@@ -256,7 +272,14 @@ class MainWindow(QMainWindow):
         msgbox.setText('Plants data uploader (1.0.3)\n\nIf it\'s useful, put a tip on Jong Hyeok\'s desk... \n(I just love doing lots of homework on Saturdays~****)')
         msgbox.show()
         msgbox.exec_()
-
+    ###########
+    def show_class_detail(self):
+        msgbox = QMessageBox()
+        msgbox.setWindowIcon(QIcon('res/info.png'))
+        msgbox.setText(tabulate(np.ndarray.tolist(result), headers = header, tablefmt="youtrack"))
+        msgbox.show()
+        msgbox.exec_()
+    ########
     def show_dialog(self):
         get_path = QFileDialog.getExistingDirectory(self, 'select target folder', './')
         if get_path:
